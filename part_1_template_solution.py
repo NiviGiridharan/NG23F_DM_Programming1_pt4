@@ -122,11 +122,23 @@ class Section1:
         # Enter your code and fill the `answer` dictionary
 
         answer = {}
-        answer["clf"] = None  # the estimator (classifier instance)
-        answer["cv"] = None  # the cross validator instance
-        # the dictionary with the scores  (a dictionary with
-        # keys: 'mean_fit_time', 'std_fit_time', 'mean_accuracy', 'std_accuracy'.
-        answer["scores"] = None
+        clf = DecisionTreeClassifier(random_state=42)
+        cv = KFold(n_splits=5, shuffle=True, random_state=42)
+        cv_results = cross_validate(clf, X, y, cv=cv, return_train_score=False)
+        
+        mean_fit_time = np.mean(cv_results['fit_time'])
+        std_fit_time = np.std(cv_results['fit_time'])
+        mean_accuracy = np.mean(cv_results['test_score'])
+        std_accuracy = np.std(cv_results['test_score'])
+        
+        answer["clf"] = clf
+        answer["cv"] = cv
+        answer["scores"] = {
+            'mean_fit_time':mean_fit_time,
+            'std_fit_time':std_fit_time,
+            'mean_accuracy':mean_accuracy,
+            'std_accuracy':std_accuracy
+        }
         return answer
 
     # ---------------------------------------------------------

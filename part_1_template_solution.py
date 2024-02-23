@@ -196,11 +196,26 @@ class Section1:
         # Therefore, `answer[k]` is a dictionary with keys: 'scores', 'cv', 'clf`
 
         answer = {}
-
+        
         # Enter your code, construct the `answer` dictionary, and return it.
+        
+        k_values = [2, 5, 8, 16]
+        
+        for k in k_values:
+            cv = ShuffleSplit(n_splits=k, test_size=1/k, random_state=42)
+            clf = DecisionTreeClassifier(random_state=42)
+            scores = cross_val_score(clf, X, y, cv=cv)
+            
+            mean_accuracy = np.mean(scores)
+            std_accuracy = np.std(scores)
+            
+            answer[k] = {
+                'scores':{"mean_accuracy":mean_accuracy, "std_accuracy":std_accuracy},
+                'cv':cv,
+                'clf':clf
+            }
 
         return answer
-
     # ----------------------------------------------------------------------
     """
     F. Repeat part D with a Random-Forest classifier with default parameters. 

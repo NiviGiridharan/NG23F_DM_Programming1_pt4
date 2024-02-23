@@ -241,6 +241,27 @@ class Section1:
         answer = {}
 
         # Enter your code, construct the `answer` dictionary, and return it.
+        
+        cv = ShuffleSplit(n_splits=5, test_size=0.2, random_state=42)
+        clf_RF = RandomForestClassifier(random_state=42)
+        clf_DT = DecisionTreeClassifier(random_state=42)
+        scores_RF = cross_validate(clf_RF, X, y, cv=cv, return_train_score=False)
+        scores_DT = cross_validate(clf_DT, X, y, cv=cv, return_train_score=False)
+        
+        mean_fit_time_RF = np.mean(scores_RF['fit_time'])
+        std_fit_time_RF = np.std(scores_RF['fit_time'])
+        mean_accuracy_RF = np.mean(scores_RF['test_score'])
+        std_accuracy_RF = np.std(scores_RF['test_score'])
+        
+        mean_fit_time_DT = np.mean(scores_DT['fit_time'])
+        std_fit_time_DT = np.std(scores_DT['fit_time'])
+        mean_accuracy_DT = np.mean(scores_DT['test_score'])
+        std_accuracy_DT = np.std(scores_DT['test_score'])
+        
+        model_highest_accuracy = "Random Forest" if mean_accuracy_RF > mean_accuracy_DT else "Decision Tre"
+        model_lowest_variance = "Random Forest" if std_accuracy_RF < std_accuracy_DT else "Decision Tree"
+        model_fastest = "Random Forest" if mean_fit_time_RF < mean_fit_time_DT else "Decision Tree"
+        
 
         """
          Answer is a dictionary with the following keys: 
@@ -253,6 +274,27 @@ class Section1:
             "model_lowest_variance" (float)
             "model_fastest" (float)
         """
+        
+        answer = {
+            "clf_RF": clf_RF,
+            "clf_DT": clf_DT,
+            "cv": cv,
+            "scores_RF": {
+                "mean_fit_time": mean_fit_time_RF,
+                "std_fit_time": std_fit_time_RF,
+                "mean_accuracy": mean_accuracy_RF,
+                "std_accuracy": std_accuracy_RF
+            },
+            "scores_DT": {
+                "mean_fit_time": mean_fit_time_DT,
+                "std_fit_time": std_fit_time_DT,
+                "mean_accuracy": mean_accuracy_DT,
+                "std_accuracy": std_accuracy_DT
+            },
+            "model_highest_accuracy": model_highest_accuracy,
+            "model_lowest_variance": model_lowest_variance,
+            "model_fastest": model_fastest
+        }
 
         return answer
 

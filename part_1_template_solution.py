@@ -354,6 +354,41 @@ class Section1:
         answer = {}
 
         # Enter your code, construct the `answer` dictionary, and return it.
+        
+        param_grid = {
+            'criterion': ['gini', 'entropy'],
+            'max_depth': [None, 10, 20, 30],
+            'min_samples_split': [2, 5, 10],
+            'min_samples_leaf': [1, 2, 4],
+            'max_features': ['auto', 'sqrt'],
+            'n_estimators': [100, 200, 300]
+        }
+        
+        clf = RandomForestClassifier(random_state=42)
+        
+        grid_search = GridSearchCV(clf, param_grid, cv=5, n_jobs=-1, verbose=1, scoring='accuracy', refit=True)
+        grid_search.fit(X, y)
+        
+        best_estimator = grid_search.best_estimator_
+        best_score = grid_search.best_score_
+        
+        clf.fit(X, y)
+        y_pred_train_orig = clf.predict(X)
+        y_pred_test_orig = clf.predict(Xtest)
+        
+        confusion_matrix_train_orig = confusion_matrix(y, y_pred_train_orig)
+        confusion_matrix_test_orig = confusion_matrix(ytest, y_pred_test_orig)
+        accuracy_orig_full_training = accuracy_score(y, y_pred_train_orig)
+        accuracy_orig_full_testing = accuracy_score(ytest, y_pred_test_orig)
+        
+        best_estimator.fit(X, y)
+        y_pred_train_best = best_estimator.predict(X)
+        y_pred_test_best = best_estimator.predict(Xtest)
+        
+        confusion_matrix_train_best = confusion_matrix(y, y_pred_train_best)
+        confusion_matrix_test_best = confusion_matrix(ytest, y_pred_test_best)
+        accuracy_best_full_training = accuracy_score(y, y_pred_train_best)
+        accuracy_best_full_testing = accuracy_score(ytest, y_pred_test_best)
 
         """
            `answer`` is a dictionary with the following keys: 
@@ -382,5 +417,21 @@ class Section1:
             "accuracy_best_full_testing"
                
         """
+        
+        answer = {
+            "clf": clf,
+            "default_parameters": clf.get_params(),
+            "best_estimator": best_estimator,
+            "grid_search": grid_search,
+            "mean_accuracy_cv": best_score,
+            "confusion_matrix_train_orig": confusion_matrix_train_orig,
+            "confusion_matrix_train_best": confusion_matrix_train_best,
+            "confusion_matrix_test_orig": confusion_matrix_test_orig,
+            "confusion_matrix_test_best": confusion_matrix_test_best,
+            "accuracy_orig_full_training": accuracy_orig_full_training,
+            "accuracy_best_full_training": accuracy_best_full_training,
+            "accuracy_orig_full_testing": accuracy_orig_full_testing,
+            "accuracy_best_full_testing": accuracy_best_full_testing
+        }
 
         return answer

@@ -115,6 +115,17 @@ class Section3:
         - "score_train" : the topk accuracy score for the training set
         - "score_test" : the topk accuracy score for the testing set
         """
+        # Comment on the rate of accuracy change for testing data
+        text_rate_accuracy_change : "The rate at which accuracy changes for the testing data decreases with higher values of k."
+        
+        # Comment on the rate of accuracy change
+        text_is_topk_useful_and_why : "Top-k accuracy is advantageous for analyzing this dataset because it provides valuable insights into the model's performance by considering multiple potential predictions. This metric is particularly relevant for applications where precise predictions are not essential, but having a spectrum of probable predictions holds significance."
+            
+        answer["clf"] = clf
+        answer["plot_k_vs_score_train"] = plot_k_vs_score_train
+        answer["plot_k_vs_score_test"] = plot_k_vs_score_test
+        answer["text_rate_accuracy_change"] = rate_of_accuracy_change
+        answer["text_is_topk_useful_and_why"] = topk_useful_and_why    
 
         return answer, Xtrain, ytrain, Xtest, ytest
 

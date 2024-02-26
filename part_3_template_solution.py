@@ -34,13 +34,18 @@ class Section3:
         # Hint: Consider using collections.Counter or numpy.unique for counting
 
         uniq, counts = np.unique(y, return_counts=True)
-        print(f"{uniq=}")
-        print(f"{counts=}")
-        print(f"{np.sum(counts)=}")
+       
+        #Classes, counts
+        print(f"Unique Classes: {uniq}")
+        print(f"Counts per class: {counts}")
+        print(f"Total count of classes: {np.sum(counts)}")
+        
+        #Converting to dictionary format
+        class_counts = dict(zip(uniq, counts))
 
         return {
-            "class_counts": {},  # Replace with actual class counts
-            "num_classes": 0,  # Replace with the actual number of classes
+            "class_counts": class_counts,
+            "num_classes": len(uniq)
         }
 
     # --------------------------------------------------------------------------

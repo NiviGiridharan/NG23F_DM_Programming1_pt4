@@ -203,7 +203,22 @@ class Section3:
 
         # Enter your code and fill the `answer` dictionary
         answer = {}
-
+       
+        # Set up cross-validation strategy and initialize the classifier
+        cv_strategy = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+        clf = SVC(random_state=42)
+        
+        # Define scoring metrics
+        scorers = {
+            'precision': make_scorer(precision_score, average='macro'),
+            'recall': make_scorer(recall_score, average='macro'),
+            'f1': make_scorer(f1_score, average='macro'),
+            'accuracy': make_scorer(accuracy_score)
+        }
+        
+        # Perform cross-validation and train classifer
+        cv_results = cross_validate(clf, X, y, cv=cv_strategy, scoring=scorers)
+        clf.fit(X, y)
         """
         Answer is a dictionary with the following keys: 
         - "scores" : a dictionary with the mean/std of the F1 score, precision, and recall
@@ -224,6 +239,41 @@ class Section3:
         - "std_precision" : the std precision
         - "std_f1" : the std f1
         """
+        # Construct the answer dictionary with relevant information
+        answer['cv'] = cv_strategy
+        answer['clf'] = clf
+        answer['scores'] = {
+            'mean_accuracy': np.mean(cv_results['test_accuracy']),
+            'std_accuracy': np.std(cv_results['test_accuracy']),
+            'mean_precision': np.mean(cv_results['test_precision']),
+            'std_precision': np.std(cv_results['test_precision']),
+            'mean_recall': np.mean(cv_results['test_recall']),
+            'std_recall': np.std(cv_results['test_recall']),
+            'mean_f1': np.mean(cv_results['test_f1']),
+            'std_f1': np.std(cv_results['test_f1']),
+        }
+        # Determine if precision is higher than recall
+        answer['is_precision_higher_than_recall'] = answer['scores']['mean_precision'] > answer['scores']['mean_recall']
+        answer['explain_is_precision_higher_than_recall'] = ("Precision is higher than recall." if answer['is_precision_higher_than_recall'] 
+    else "Recall is higher than precision.")
+        answer['confusion_matrix_train'] = confusion_matrix(y, clf.predict(X))
+        answer['confusion_matrix_test'] = confusion_matrix(ytest, clf.predict(Xtest))
+        
+        # Plot confusion matrix for the training set
+        plot_confusion_matrix(clf, X, y)
+        plt.title("Confusion Matrix - Training Set")
+        plt.xlabel('Predicted Labels')
+        plt.ylabel('True Labels')
+        plt.show()
+        
+        # Plot confusion matrix for the test set
+        plot_confusion_matrix(clf, Xtest, ytest)
+        plt.title("Confusion Matrix - Test Set")
+        plt.xlabel('Predicted Labels')
+        plt.ylabel('True Labels')
+        plt.show()
+        
+        return answer
 
         return answer
 

@@ -151,7 +151,34 @@ class Section3:
         # Enter your code and fill the `answer` dictionary
         answer = {}
 
+        # Prepare the data for training, testing and filtering out samples labeled as 7 or 9 from the training and testing sets
+        X, y, Xtest, ytest = u.prepare_data()
+        
+        Xtrain, ytrain = u.filter_out_7_9s(X, y)
+        Xtest, ytest = u.filter_out_7_9s(Xtest, ytest)
+        
+        Xtrain = Xtrain/255.0
+        Xtest = Xtest/255.0
+        
+        indices_of_9 = np.where(ytrain == 9)[0]
+        indices_to_remove = np.random.choice(indices_of_9, size=int(0.9 * len(indices_of_9)), replace=False)
+        Xtrain = np.delete(Xtrain, indices_to_remove, axis=0)
+        ytrain = np.delete(ytrain, indices_to_remove)
+        ytrain = np.where(ytrain == 7, 0, ytrain)
+        ytrain = np.where(ytrain == 9, 1, ytrain)
+        
+        ytest = np.where(ytest == 7, 0, ytest)
+        ytest = np.where(ytest == 9, 1, ytest)
+
         # Answer is a dictionary with the same keys as part 1.B
+
+        # Populate the answer dictionary with relevant information
+        answer["length_Xtrain"] = len(Xtrain)
+        answer["length_Xtest"] = len(Xtest)
+        answer["length_ytrain"] = len(ytrain)
+        answer["length_ytest"] = len(ytest)
+        answer["max_Xtrain"] = np.max(Xtrain)
+        answer["max_Xtest"] = np.max(Xtest)
 
         return answer, X, y, Xtest, ytest
 

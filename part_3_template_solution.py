@@ -292,7 +292,26 @@ class Section3:
         """"""
         # Enter your code and fill the `answer` dictionary
         answer = {}
+        ## Compute class weights based on the distribution of classes in y
+        unique_classes_D = np.unique(y)
+        class_weights_D = compute_class_weight(class_weight='balanced', classes=unique_classes_D, y=y)
+        class_weights_dict = dict(zip(unique_classes_D, class_weights_D))
 
+        #Set up cross-validation strategy with stratified K-fold and Initialize the classifier with computed class weights
+        cv_strategy_D = StratifiedKFold(n_splits=5, shuffle=True, random_state=self.seed)
+        clf_D = SVC(class_weight=class_weights_dict, random_state=42)
+        
+        # Define scoring metrics for evaluation
+        scorers_D = {
+            'precision': make_scorer(precision_score, average='macro'),
+            'recall': make_scorer(recall_score, average='macro'),
+            'f1': make_scorer(f1_score, average='macro'),
+            'accuracy': make_scorer(accuracy_score)
+        }
+        
+        # Perform cross-validation and Train the classifier
+        cv_results_D = cross_validate(clf_D, X, y, cv=cv_strategy_D, scoring=scorers_D)
+        clf_D.fit(X, y)
         """
         Answer is a dictionary with the following keys: 
         - "scores" : a dictionary with the mean/std of the F1 score, precision, and recall
@@ -316,5 +335,27 @@ class Section3:
 
         Recall: The scores are based on the results of the cross-validation step
         """
+        #Store computed class weights, cross-validation strategy classifier and trained with class weights
+        answer['class_weights'] = class_weights_dict
+        answer['cv'] = cv_strategy_D
+        answer['clf'] = clf_D
+       
+        # Calculate and store evaluation scores
+        answer['scores'] = {
+            'mean_accuracy': np.mean(cv_results_D['test_accuracy']),
+            'std_accuracy': np.std(cv_results_D['test_accuracy']),
+            'mean_precision': np.mean(cv_results_D['test_precision']),
+            'std_precision': np.std(cv_results_D['test_precision']),
+            'mean_recall': np.mean(cv_results_D['test_recall']),
+            'std_recall': np.std(cv_results_D['test_recall']),
+            'mean_f1': np.mean(cv_results_D['test_f1']),
+            'std_f1': np.std(cv_results_D['test_f1']),
+        }
+        # Compute and store confusion matrices for both training and testing sets
+        answer['confusion_matrix_train'] = confusion_matrix(y, clf_D.predict(X))
+        answer['confusion_matrix_test'] = confusion_matrix(ytest, clf_D.predict(Xtest))
+       
+        answer['explain_purpose_of_class_weights'] = "Class weights are employed to tackle class imbalance by assigning greater importance to less common classes. This ensures that the classifier focuses more on minority classes during training."
+        answer['explain_performance_difference'] = "A rationale stemming from observed variations in performance between utilizing default and weighted loss functions. Generally, incorporating class weights enhances recall for underrepresented classes while potentially impacting precision."
 
         return answer

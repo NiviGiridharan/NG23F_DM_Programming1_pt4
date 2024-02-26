@@ -73,7 +73,29 @@ class Section3:
         # Enter code and return the `answer`` dictionary
 
         answer = {}
+        # Train the classifier
+        clf = self.train_classifier(Xtrain, ytrain)
 
+        # Initialize lists to store k-values and corresponding scores for training and testing data
+        plot_k_vs_score_train = []
+        plot_k_vs_score_test = []
+
+        # Define k-values to be evaluated
+        k_values = [1, 2, 3, 4, 5]
+
+        # Loop over each k-value
+        for k in k_values:
+            score_train = self.top_k_accuracy(clf, Xtrain, ytrain, k)
+            score_test = self.top_k_accuracy(clf, Xtest, ytest, k)
+            
+            plot_k_vs_score_train.append((k, score_train))
+            plot_k_vs_score_test.append((k, score_test))
+
+            # Store the scores for this k-value in a dictionary
+            answer[k] = {
+                "score_train": score_train,
+                "score_test": score_test
+            }
         """
         # `answer` is a dictionary with the following keys:
         - integers for each topk (1,2,3,4,5)

@@ -4,7 +4,16 @@
 import numpy as np
 from numpy.typing import NDArray
 from typing import Any
-
+import utils as u
+import new_utils as nu
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import ShuffleSplit, cross_validate, train_test_split
+from sklearn.model_selection import (
+    ShuffleSplit,
+    cross_validate,
+    KFold,
+)
 # ======================================================================
 
 # I could make Section 2 a subclass of Section 1, which would facilitate code reuse.
@@ -69,8 +78,21 @@ class Section2:
         # return values:
         # Xtrain, ytrain, Xtest, ytest: the data used to fill the `answer`` dictionary
 
+        # Initialize training and testing data with dummy values
         Xtrain = Xtest = np.zeros([1, 1], dtype="float")
         ytrain = ytest = np.zeros([1], dtype="int")
+
+        # Prepare actual data for training and testing
+        X, y, Xtest, ytest = u.prepare_data()
+        
+        # Scale the training and testing data and Convert data types of labels to integer
+        Xtrain = nu.scale_data(X)
+        Xtest = nu.scale_data(Xtest)
+        ytrain = y.astype(int)
+        ytest = ytest.astype(int)
+        
+        print(set(ytrain))
+        print(set(ytest))
 
         return answer, Xtrain, ytrain, Xtest, ytest
 
